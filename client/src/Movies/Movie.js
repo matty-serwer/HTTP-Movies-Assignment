@@ -23,6 +23,17 @@ function Movie({ addToSavedList }) {
     push(`/update-movie/${params.id}`)
   }
 
+  const deleteMovie = (id) => {
+    axios.delete(`http://localhost:5000/api/movies/${params.id}`)
+      .then(res => {
+        console.log(res);
+        push('/');
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  }
+
   useEffect(() => {
     fetchMovie(params.id);
   }, [params.id]);
@@ -40,6 +51,9 @@ function Movie({ addToSavedList }) {
       </div>
       <div className="update-button" onClick={updateMovie}>
         Update
+      </div>
+      <div className="delete-button" onClick={deleteMovie}>
+        Delete
       </div>
     </div>
   );
