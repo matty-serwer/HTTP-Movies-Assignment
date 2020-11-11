@@ -3,14 +3,13 @@ import { useParams, useHistory } from "react-router-dom";
 import axios from "axios";
 
 const initialMovie = {
-  id: "",
   title: "",
   director: "",
   metascore: "",
   stars: [],
 };
 
-const UpdateMovieForm = (props) => {
+const AddMovieForm = (props) => {
   const { push } = useHistory();
   const { id } = useParams();
   const [movie, setMovie] = useState(initialMovie);
@@ -19,20 +18,13 @@ const UpdateMovieForm = (props) => {
     setMovie({ ...movie, [e.target.name]: e.target.value });
   };
 
-  const changeStar = (id) => (e) => {
-      const newStars = movie.stars.map((star, sid) => {
-        if(id !== sid) return star;
-        return e.target.value
-      })
-    setMovie({ ...movie, stars: newStars});
-  };
-
-  const putChanges = (e) => {
+  const postChanges = (e) => {
     e.preventDefault();
     axios
-      .put(`http://localhost:5000/api/movies/${id}`, movie)
+      .post(`http://localhost:5000/api/movies/`, movie)
       .then((res) => {
         console.log(res);
+        // props.setMovieList(res.data);
         push("/");
       })
       .then((err) => {
@@ -40,21 +32,14 @@ const UpdateMovieForm = (props) => {
       });
   };
 
-  useEffect(() => {
-    axios
-      .get(`http://localhost:5000/api/movies/${id}`)
-      .then((res) => {
-        console.log(res);
-        setMovie(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+  const addStar = e => {
+      setMovie({ ...movie, stars: [...movie.stars, '']})
+  }
 
   return (
     <div className='form-container'>
-      <form onSubmit={putChanges}>
+      <h2>Add A Movie</h2>
+      <form onSubmit={postChanges}>
         <label>
           Title:
           <input
@@ -82,21 +67,29 @@ const UpdateMovieForm = (props) => {
             onChange={handleChange}
           />
         </label>
-        {movie.stars.map((star, id) => (
-          <label>
-            Star: 
-            <input
-              type='text'
-              value={star}
-              onChange={changeStar(id)}
-            />
-          </label>
-        ))}
-
-        <button className='submit-button'>Submit Changes</button>
+        <button onClick={addStar}>Add New Star</button>
+        {movie.stars.map((val, idx) => {
+          let starName = `star${idx}`;
+          return (
+            <div key={idx}>
+              <label htmlFor={starName}>
+                <input
+                  type='text'
+                  name={starName}
+                  data-id={idx}
+                  id={starName}
+                  className='name'
+                />
+              </label>
+            </div>
+          );
+        })}
+        <button type='submit' value='submit' className='submit-button'>
+          Submit Changes
+        </button>
       </form>
     </div>
   );
 };
 
-export default UpdateMovieForm;
+export default AddMovieForm;
