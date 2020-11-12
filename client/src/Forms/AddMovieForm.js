@@ -18,6 +18,14 @@ const AddMovieForm = (props) => {
     setMovie({ ...movie, [e.target.name]: e.target.value });
   };
 
+  const handleStarChange = (id) => (e) => {
+      const newStars = movie.stars.map((star, sid) => {
+        if(id !== sid) return star;
+        return e.target.value
+      })
+    setMovie({ ...movie, stars: newStars});
+  };
+
   const postChanges = (e) => {
     e.preventDefault();
     axios
@@ -25,6 +33,7 @@ const AddMovieForm = (props) => {
       .then((res) => {
         console.log(res);
         // props.setMovieList(res.data);
+        console.log(movie)
         push("/");
       })
       .then((err) => {
@@ -33,6 +42,7 @@ const AddMovieForm = (props) => {
   };
 
   const addStar = e => {
+      e.preventDefault();
       setMovie({ ...movie, stars: [...movie.stars, '']})
   }
 
@@ -79,6 +89,8 @@ const AddMovieForm = (props) => {
                   data-id={idx}
                   id={starName}
                   className='name'
+                  onChange={handleStarChange(idx)}
+                  value={movie.stars[idx]}
                 />
               </label>
             </div>
